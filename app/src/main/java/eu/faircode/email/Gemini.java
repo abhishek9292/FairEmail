@@ -152,6 +152,14 @@ public class Gemini {
         return prefs.getString("gemini_uri", BuildConfig.GEMINI_ENDPOINT);
     }
 
+    static String getHost(Context context) {
+        try {
+            return new URL(getUri(context)).getHost();
+        } catch (Throwable ex) {
+            return getUri(context);
+        }
+    }
+
     private static JSONObject call(Context context, String method, String path, JSONObject args) throws JSONException, IOException {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String apikey = prefs.getString("gemini_apikey", null);

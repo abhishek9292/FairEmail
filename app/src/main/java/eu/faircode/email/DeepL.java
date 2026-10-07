@@ -85,6 +85,16 @@ public class DeepL {
         return prefs.getBoolean("deepl_enabled", false);
     }
 
+    static String getHost(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String key = prefs.getString("deepl_key", null);
+        try {
+            return new URL(getBaseUri(key)).getHost();
+        } catch (Throwable ex) {
+            return "api.deepl.com";
+        }
+    }
+
     public static boolean canTranslate(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String deepl_key = prefs.getString("deepl_key", null);
@@ -205,6 +215,11 @@ public class DeepL {
 
         if (!ConnectionHelper.getNetworkState(context).isConnected())
             throw new IllegalArgumentException(context.getString(R.string.title_no_internet));
+
+        // Never send text to a third party without asking (master switch respected)
+        if (!ConsentManager.check(context, getHost(context),
+                context.getString(R.string.title_consent_data_text)))
+            throw new IllegalArgumentException("Consent denied");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         boolean small = prefs.getBoolean("deepl_small", false);

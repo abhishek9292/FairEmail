@@ -106,6 +106,7 @@ public class FragmentOptionsPrivacy extends FragmentBase implements SharedPrefer
     private ImageButton ibDisconnectCategories;
     private AdapterDisconnect adapter;
     private SwitchCompat swMnemonic;
+    private SwitchCompat swDenyThirdParty;
     private Button btnClearAll;
     private TextView tvMnemonic;
 
@@ -179,6 +180,7 @@ public class FragmentOptionsPrivacy extends FragmentBase implements SharedPrefer
         rvDisconnect = view.findViewById(R.id.rvDisconnect);
         ibDisconnectCategories = view.findViewById(R.id.ibDisconnectCategories);
         swMnemonic = view.findViewById(R.id.swMnemonic);
+        swDenyThirdParty = view.findViewById(R.id.swDenyThirdParty);
         btnClearAll = view.findViewById(R.id.btnClearAll);
         tvMnemonic = view.findViewById(R.id.tvMnemonic);
 
@@ -571,6 +573,21 @@ public class FragmentOptionsPrivacy extends FragmentBase implements SharedPrefer
             }
         });
 
+        View btnConsentLog = view.findViewById(R.id.btnConsentLog);
+        btnConsentLog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ActivityConsentLog.getIntent(v.getContext()));
+            }
+        });
+
+        swDenyThirdParty.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                prefs.edit().putBoolean("deny_thirdparty", checked).apply();
+            }
+        });
+
         swMnemonic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
@@ -715,6 +732,7 @@ public class FragmentOptionsPrivacy extends FragmentBase implements SharedPrefer
             swGenericUserAgent.setChecked(prefs.getBoolean("generic_ua", false));
             swSafeBrowsing.setChecked(prefs.getBoolean("safe_browsing", false));
             swLoadEmoji.setChecked(prefs.getBoolean("load_emoji", false));
+            swDenyThirdParty.setChecked(prefs.getBoolean("deny_thirdparty", true));
 
             long disconnect_last = prefs.getLong("disconnect_last", -1);
             tvDisconnectBlacklistTime.setText(disconnect_last < 0 ? null : DF.format(disconnect_last));

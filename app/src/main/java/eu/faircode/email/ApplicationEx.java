@@ -175,6 +175,13 @@ public class ApplicationEx extends Application
         Log.logMemory(this, "App");
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Protection: enforce user-only updates/config. Existing installs are migrated to
+        // no automatic updates; new versions must be installed manually by the user.
+        if (prefs.getBoolean("updates", false))
+            prefs.edit().putBoolean("updates", false).apply();
+        prefs.edit().putBoolean("weekly", false).putBoolean("beta", false).apply();
+
         final boolean crash_reports = prefs.getBoolean("crash_reports", false);
         final boolean leak_canary = prefs.getBoolean("leak_canary", BuildConfig.TEST_RELEASE);
         final boolean load_emoji = prefs.getBoolean("load_emoji", false);

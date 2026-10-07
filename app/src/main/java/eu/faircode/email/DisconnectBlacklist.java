@@ -114,6 +114,10 @@ public class DisconnectBlacklist {
     }
 
     static void download(Context context) throws IOException, JSONException {
+        // Master switch: no third-party requests at all
+        if (ConsentManager.isDenyAll(context))
+            return;
+
         File file = getFile(context);
 
         URL url = new URL(LIST);

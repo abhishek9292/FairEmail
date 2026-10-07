@@ -479,7 +479,8 @@ public class ContactInfo {
                             }
                         }
 
-                        if (ddg_icons && !TextUtils.isEmpty(Avatar.DDG_URI))
+                        if (ddg_icons && !TextUtils.isEmpty(Avatar.DDG_URI) &&
+                                !ConsentManager.isDenyAll(context))
                             futures.add(Helper.getDownloadTaskExecutor().submit(new Callable<Favicon>() {
                                 @Override
                                 public Favicon call() throws Exception {

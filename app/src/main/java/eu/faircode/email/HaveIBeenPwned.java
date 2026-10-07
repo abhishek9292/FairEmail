@@ -35,6 +35,11 @@ public class HaveIBeenPwned {
     private final static int FETCH_TIMEOUT = 15 * 1000; // milliseconds
 
     static Integer check(String password, Context context) throws NoSuchAlgorithmException, IOException {
+        // Never query a third party without asking (master switch respected)
+        if (!ConsentManager.check(context, "api.pwnedpasswords.com",
+                context.getString(R.string.title_consent_data_password_hash)))
+            return null;
+
         String hashed = Helper.sha1(password.getBytes());
         String range = hashed.substring(0, 5);
         String rest = hashed.substring(5);

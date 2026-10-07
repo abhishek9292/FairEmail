@@ -71,6 +71,14 @@ public class CloudSync {
 
     private static final Map<String, Pair<byte[], byte[]>> keyCache = new HashMap<>();
 
+    static String getHost(Context context) {
+        try {
+            return new URL(BuildConfig.CLOUD_URI).getHost();
+        } catch (Throwable ex) {
+            return BuildConfig.CLOUD_URI;
+        }
+    }
+
     // Upper level
 
     static void execute(Context context, String command, boolean manual)
@@ -82,6 +90,11 @@ public class CloudSync {
         if (TextUtils.isEmpty(user) || TextUtils.isEmpty(password))
             return;
         if (!ActivityBilling.isPro(context))
+            return;
+
+        // Never upload settings to a third party without asking (master switch respected)
+        if (!ConsentManager.check(context, CloudSync.getHost(context),
+                context.getString(R.string.title_consent_data_settings)))
             return;
 
         JSONObject jrequest = new JSONObject();

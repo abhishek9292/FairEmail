@@ -190,6 +190,14 @@ public class OpenAI {
         return endpoint;
     }
 
+    static String getHost(Context context) {
+        try {
+            return new URL(getUri(context)).getHost();
+        } catch (Throwable ex) {
+            return getUri(context);
+        }
+    }
+
     private static JSONObject call(Context context, String method, String path, JSONObject args) throws JSONException, IOException {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String apikey = prefs.getString("openai_apikey", null);

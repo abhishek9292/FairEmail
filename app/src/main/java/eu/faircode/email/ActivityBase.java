@@ -511,6 +511,8 @@ abstract class ActivityBase extends AppCompatActivity implements SharedPreferenc
 
         visible = true;
 
+        ConsentManager.register(this);
+
         if (!(this instanceof ActivityMain)) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
             prefs.edit().putString("last_activity", this.getClass().getName()).apply();
@@ -566,6 +568,8 @@ abstract class ActivityBase extends AppCompatActivity implements SharedPreferenc
         }
 
         visible = false;
+
+        ConsentManager.unregister(this);
 
         checkAuthentication(false);
     }

@@ -812,6 +812,11 @@ public class FragmentOptionsMisc extends FragmentBase implements SharedPreferenc
             }
         });
 
+        // Protection: no automatic updates. Config changes happen only through direct user action.
+        swUpdates.setEnabled(false);
+        swCheckWeekly.setEnabled(false);
+        swBeta.setEnabled(false);
+
         swUpdates.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
@@ -2548,11 +2553,11 @@ public class FragmentOptionsMisc extends FragmentBase implements SharedPreferenc
                     selected = pos + 1;
             }
 
-            swUpdates.setChecked(prefs.getBoolean("updates", true));
+            swUpdates.setChecked(Protection.updatesAllowed(getContext()) && prefs.getBoolean("updates", false));
             swCheckWeekly.setChecked(prefs.getBoolean("weekly", Helper.hasPlayStore(getContext())));
-            swCheckWeekly.setEnabled(swUpdates.isChecked());
+            swCheckWeekly.setEnabled(false);
             swBeta.setChecked(prefs.getBoolean("beta", false));
-            swBeta.setEnabled(swUpdates.isChecked());
+            swBeta.setEnabled(false);
             swChangelog.setChecked(prefs.getBoolean("show_changelog", true));
             swAnnouncements.setChecked(prefs.getBoolean("announcements", true));
             swExperiments.setChecked(prefs.getBoolean("experiments", false));

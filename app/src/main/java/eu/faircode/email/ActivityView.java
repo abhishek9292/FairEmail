@@ -1705,6 +1705,11 @@ public class ActivityView extends ActivityBilling implements FragmentManager.OnB
     }
 
     private void checkUpdate(boolean always) {
+        // Protection: never check for or apply updates automatically.
+        // The user must uninstall and install the latest version manually.
+        if (!Protection.updatesAllowed(this))
+            return;
+
         if (Helper.isPlayStoreInstall())
             return;
         if (!Helper.hasValidFingerprint(this) && !(always && BuildConfig.DEBUG))

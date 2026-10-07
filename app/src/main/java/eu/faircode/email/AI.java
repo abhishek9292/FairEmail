@@ -45,14 +45,56 @@ public class AI {
         return (OpenAI.isAvailable(context) || Gemini.isAvailable(context));
     }
 
+    /**
+     * Build the consent request for a pending AI transfer and ask the user.
+     * Always returns false when the user does not explicitly approve.
+     */
+    static boolean requestConsent(Context context, String provider, boolean body,
+                                  boolean reply, boolean attachments, boolean subject,
+                                  boolean prompt) {
+        List<String> items = new ArrayList<>();
+        if (body)
+            items.add(context.getString(R.string.title_consent_data_body));
+        if (reply)
+            items.add(context.getString(R.string.title_consent_data_reply));
+        if (attachments)
+            items.add(context.getString(R.string.title_consent_data_attachments));
+        if (subject)
+            items.add(context.getString(R.string.title_consent_data_subject));
+        if (prompt)
+            items.add(context.getString(R.string.title_consent_data_prompt));
+
+        ConsentManager.ConsentRequest request =
+                ConsentManager.buildRequest(context, provider, items);
+        return ConsentManager.requestConsent(context, request);
+    }
+
+    static String getProvider(Context context) {
+        if (OpenAI.isAvailable(context))
+            return OpenAI.getHost(context);
+        else if (Gemini.isAvailable(context))
+            return Gemini.getHost(context);
+        else
+            return null;
+    }
+
     @NonNull
     static Spanned completeChat(Context context, long id, boolean system, CharSequence body, String reply, String prompt) throws JSONException, IOException {
         StringBuilder sb = new StringBuilder();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        // Never send anything to a third party without asking every single time
+        boolean multimodal = prefs.getBoolean("openai_multimodal", false);
+        String provider = getProvider(context);
+        if (!requestConsent(context, provider,
+                !TextUtils.isEmpty(body), !TextUtils.isEmpty(reply),
+                multimodal && OpenAI.isAvailable(context),
+                false, true))
+            throw new IllegalArgumentException("Consent denied");
+
         if (OpenAI.isAvailable(context)) {
             String model = prefs.getString("openai_model", OpenAI.DEFAULT_MODEL);
             float temperature = prefs.getFloat("openai_temperature", OpenAI.DEFAULT_TEMPERATURE);
-            boolean multimodal = prefs.getBoolean("openai_multimodal", false);
             String defaultPrompt = prefs.getString("openai_answer", OpenAI.DEFAULT_ANSWER_PROMPT);
             String systemPrompt = prefs.getString("openai_system", null);
 
@@ -184,10 +226,15 @@ public class AI {
 
         StringBuilder sb = new StringBuilder();
         if (OpenAI.isAvailable(context)) {
+            // Never send anything to a third party without asking every single time
+            boolean multimodal = prefs.getBoolean("openai_multimodal", false);
+            if (!requestConsent(context, getProvider(context),
+                    !TextUtils.isEmpty(body), false, multimodal, false, true))
+                throw new IllegalArgumentException("Consent denied");
+
             String model = prefs.getString("openai_model", OpenAI.DEFAULT_MODEL);
             float temperature = prefs.getFloat("openai_temperature", OpenAI.DEFAULT_TEMPERATURE);
             String defaultPrompt = prefs.getString("openai_summarize", OpenAI.DEFAULT_SUMMARY_PROMPT);
-            boolean multimodal = prefs.getBoolean("openai_multimodal", false);
 
             List<OpenAI.Message> input = new ArrayList<>();
 
@@ -218,6 +265,11 @@ public class AI {
                         sb.append(content.getContent());
                     }
         } else if (Gemini.isAvailable(context)) {
+            // Never send anything to a third party without asking every single time
+            if (!requestConsent(context, getProvider(context),
+                    !TextUtils.isEmpty(body), false, false, false, true))
+                throw new IllegalArgumentException("Consent denied");
+
             String model = prefs.getString("gemini_model", Gemini.DEFAULT_MODEL);
             float temperature = prefs.getFloat("gemini_temperature", Gemini.DEFAULT_TEMPERATURE);
             String defaultPrompt = prefs.getString("gemini_summarize", Gemini.DEFAULT_SUMMARY_PROMPT);

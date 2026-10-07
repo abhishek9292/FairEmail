@@ -401,6 +401,13 @@
             android:resizeableActivity="true" />
 
         <activity
+            android:name=".ActivityConsentLog"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true" />
+
+        <activity
             android:name=".ActivityError"
             android:exported="false"
             android:launchMode="singleTask"

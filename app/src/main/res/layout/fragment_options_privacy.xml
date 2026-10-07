@@ -76,6 +76,30 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swDenyThirdParty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:checked="true"
+                    android:text="@string/title_consent_deny_thirdparty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvCaptionGeneral"
+                    app:switchPadding="12dp" />
+
+                <TextView
+                    android:id="@+id/tvDenyThirdPartyHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="48dp"
+                    android:text="@string/title_consent_deny_thirdparty_hint"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textStyle="italic"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/swDenyThirdParty" />
+
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/swConfirmLinks"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -84,7 +108,7 @@
                     android:text="@string/title_advanced_confirm_links"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvCaptionGeneral"
+                    app:layout_constraintTop_toBottomOf="@id/tvDenyThirdPartyHint"
                     app:switchPadding="12dp" />
 
                 <TextView
@@ -827,6 +851,34 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:constraint_referenced_ids="swSafeBrowsing,tvSafeBrowsingHint,ibSafeBrowsing" />
+
+                <TextView
+                    android:id="@+id/btnConsentLog"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:drawableEnd="@drawable/twotone_security_24"
+                    android:drawablePadding="6dp"
+                    android:focusable="true"
+                    android:paddingVertical="6dp"
+                    android:text="@string/title_consent_log"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvMnemonic" />
+
+                <TextView
+                    android:id="@+id/tvConsentLogHint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_consent_log_hint"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                    android:textStyle="italic"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/btnConsentLog" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
