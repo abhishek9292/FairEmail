@@ -1111,6 +1111,11 @@ public interface DaoMessage {
             "    LIMIT :keep)")
     int deleteMessagesKeep(long folder, int keep);
 
+    @Query("SELECT COUNT(*) FROM message" +
+            " WHERE folder = :folder" +
+            " AND ui_flagged")
+    int countFlaggedMessages(long folder);
+
     @Transaction
     @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("SELECT message.*" +

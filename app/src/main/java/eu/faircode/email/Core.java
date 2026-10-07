@@ -3848,6 +3848,9 @@ class Core {
                         " deleted=" + deleted);
             }
 
+            // Enforce the per-folder limit of messages stored on the device
+            enforceMaxMessages(context, folder);
+
             folder.last_sync_count = imessages.length;
             db.folder().setFolderLastSyncCount(folder.id, folder.last_sync_count);
             db.folder().setFolderLastSync(folder.id, new Date().getTime());
@@ -4607,6 +4610,11 @@ class Core {
             db.folder().setFolderLastSync(folder.id, new Date().getTime());
             //db.folder().setFolderError(folder.id, null);
 
+            // Enforce the per-folder limit of messages stored on the device
+            int removed = enforceMaxMessages(context, folder);
+            if (removed > 0)
+                EntityLog.log(context, folder.name + " max messages cleaned=" + removed);
+
             stats.total = (SystemClock.elapsedRealtime() - search);
 
             EntityLog.log(context, EntityLog.Type.Statistics,
@@ -4614,6 +4622,24 @@ class Core {
         } finally {
             Log.i(folder.name + " end sync state=" + state);
             db.folder().setFolderSyncState(folder.id, null);
+        }
+    }
+
+    static int enforceMaxMessages(Context context, EntityFolder folder) {
+        try {
+            if (folder.max_messages == null || folder.max_messages <= 0)
+                return 0;
+
+            DB db = DB.getInstance(context);
+            // Keep flagged messages regardless of the limit
+            int flagged = db.message().countFlaggedMessages(folder.id);
+            int deleted = db.message().deleteMessagesKeep(folder.id, folder.max_messages + flagged);
+            Log.i(folder.name + " max=" + folder.max_messages +
+                    " flagged=" + flagged + " deleted=" + deleted);
+            return deleted;
+        } catch (Throwable ex) {
+            Log.e(ex);
+            return 0;
         }
     }
 

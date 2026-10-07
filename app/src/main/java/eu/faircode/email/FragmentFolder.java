@@ -82,6 +82,8 @@ public class FragmentFolder extends FragmentBase {
     private EditText etSyncDays;
     private EditText etKeepDays;
     private CheckBox cbKeepAll;
+    private CheckBox cbMaxMessages;
+    private EditText etMaxMessages;
     private CheckBox cbAutoDelete;
     private TextView tvAutoDeleteArchiveHint;
     private Button btnSave;
@@ -149,6 +151,8 @@ public class FragmentFolder extends FragmentBase {
         etSyncDays = view.findViewById(R.id.etSyncDays);
         etKeepDays = view.findViewById(R.id.etKeepDays);
         cbKeepAll = view.findViewById(R.id.cbKeepAll);
+        cbMaxMessages = view.findViewById(R.id.cbMaxMessages);
+        etMaxMessages = view.findViewById(R.id.etMaxMessages);
         cbAutoDelete = view.findViewById(R.id.cbAutoDelete);
         tvAutoDeleteArchiveHint = view.findViewById(R.id.tvAutoDeleteArchiveHint);
         btnSave = view.findViewById(R.id.btnSave);
@@ -232,6 +236,13 @@ public class FragmentFolder extends FragmentBase {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 etKeepDays.setEnabled(!isChecked);
                 cbAutoDelete.setEnabled(!isChecked);
+            }
+        });
+
+        cbMaxMessages.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                etMaxMessages.setEnabled(isChecked);
             }
         });
 
@@ -348,6 +359,9 @@ public class FragmentFolder extends FragmentBase {
                     else
                         etKeepDays.setText(Integer.toString(keep_days));
                     cbAutoDelete.setChecked(folder != null && folder.auto_delete);
+                    cbMaxMessages.setChecked(folder != null && folder.max_messages > 0);
+                    etMaxMessages.setText(Integer.toString(folder == null || folder.max_messages <= 0
+                            ? EntityFolder.DEFAULT_MAX_MESSAGES : folder.max_messages));
                 }
 
                 Helper.setViewsEnabled(view, true);
@@ -373,6 +387,7 @@ public class FragmentFolder extends FragmentBase {
                 tvAutoClassifyPro.setVisibility(canAutoClassify && !pro ? View.VISIBLE : View.GONE);
                 etKeepDays.setEnabled(!cbKeepAll.isChecked());
                 cbAutoDelete.setEnabled(!cbKeepAll.isChecked());
+                etMaxMessages.setEnabled(cbMaxMessages.isChecked());
                 cbAutoDelete.setText(folder != null &&
                         (EntityFolder.TRASH.equals(folder.type) ||
                                 EntityFolder.JUNK.equals(folder.type))
@@ -496,6 +511,9 @@ public class FragmentFolder extends FragmentBase {
         args.putString("keep", cbKeepAll.isChecked()
                 ? Integer.toString(Integer.MAX_VALUE)
                 : etKeepDays.getText().toString());
+        args.putString("max_messages", cbMaxMessages.isChecked()
+                ? etMaxMessages.getText().toString()
+                : Integer.toString(EntityFolder.DEFAULT_MAX_MESSAGES));
         args.putBoolean("auto_delete", cbAutoDelete.isChecked());
 
         args.putBoolean("imap", imap);
@@ -540,6 +558,7 @@ public class FragmentFolder extends FragmentBase {
                 boolean auto_classify_target = args.getBoolean("auto_classify_target");
                 String sync = args.getString("sync");
                 String keep = args.getString("keep");
+                String max_messages_text = args.getString("max_messages");
                 boolean auto_delete = args.getBoolean("auto_delete");
 
                 boolean pro = ActivityBilling.isPro(context);
@@ -563,6 +582,11 @@ public class FragmentFolder extends FragmentBase {
                 int poll_factor = (TextUtils.isEmpty(factor) ? 1 : Integer.parseInt(factor));
                 if (poll_factor < 1)
                     poll_factor = 1;
+
+                int max_messages_value = (TextUtils.isEmpty(max_messages_text)
+                        ? EntityFolder.DEFAULT_MAX_MESSAGES : Integer.parseInt(max_messages_text));
+                if (max_messages_value < 0)
+                    max_messages_value = EntityFolder.DEFAULT_MAX_MESSAGES;
 
                 boolean reload;
                 DB db = DB.getInstance(context);
@@ -610,6 +634,8 @@ public class FragmentFolder extends FragmentBase {
                                 return true;
                             if (!Objects.equals(folder.keep_days, keep_days))
                                 return true;
+                            if (!Objects.equals(folder.max_messages, max_messages_value))
+                                return true;
                             if (!Objects.equals(folder.auto_delete, auto_delete))
                                 return true;
                         }
@@ -655,6 +681,7 @@ public class FragmentFolder extends FragmentBase {
                         create.auto_classify_target = auto_classify_target;
                         create.sync_days = sync_days;
                         create.keep_days = keep_days;
+                        create.max_messages = max_messages_value;
                         create.auto_delete = auto_delete;
                         create.tbc = true;
                         db.folder().insertFolder(create);
@@ -678,7 +705,7 @@ public class FragmentFolder extends FragmentBase {
                                 hide, hide_seen,
                                 synchronize, poll, poll_factor, download,
                                 auto_classify_source, auto_classify_target,
-                                sync_days, keep_days, auto_delete);
+                                sync_days, keep_days, max_messages_value, auto_delete);
                         db.folder().setFolderError(id, null);
 
                         if (!reload && synchronize)

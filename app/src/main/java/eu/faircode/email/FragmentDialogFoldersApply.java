@@ -46,6 +46,7 @@ public class FragmentDialogFoldersApply extends FragmentDialogBase {
         final EditText etSyncDays = view.findViewById(R.id.etSyncDays);
         final EditText etKeepDays = view.findViewById(R.id.etKeepDays);
         final CheckBox cbKeepAll = view.findViewById(R.id.cbKeepAll);
+        final EditText etMaxMessages = view.findViewById(R.id.etMaxMessages);
         final CheckBox cbPollSystem = view.findViewById(R.id.cbPollSystem);
         final CheckBox cbPollUser = view.findViewById(R.id.cbPollUser);
 
@@ -71,6 +72,7 @@ public class FragmentDialogFoldersApply extends FragmentDialogBase {
                         args.putString("keep", cbKeepAll.isChecked()
                                 ? Integer.toString(Integer.MAX_VALUE)
                                 : etKeepDays.getText().toString());
+                        args.putString("max_messages", etMaxMessages.getText().toString());
                         args.putBoolean("system", cbPollSystem.isChecked());
                         args.putBoolean("user", cbPollUser.isChecked());
 
@@ -83,6 +85,7 @@ public class FragmentDialogFoldersApply extends FragmentDialogBase {
                                     enable = args.getBoolean("enable");
                                 String sync = args.getString("sync");
                                 String keep = args.getString("keep");
+                                String max_messages = args.getString("max_messages");
                                 boolean system = args.getBoolean("system");
                                 boolean user = args.getBoolean("user");
 
@@ -90,6 +93,12 @@ public class FragmentDialogFoldersApply extends FragmentDialogBase {
                                     sync = "7";
                                 if (TextUtils.isEmpty(keep))
                                     keep = "30";
+
+                                int max = (TextUtils.isEmpty(max_messages)
+                                        ? EntityFolder.DEFAULT_MAX_MESSAGES
+                                        : Integer.parseInt(max_messages));
+                                if (max < 0)
+                                    max = EntityFolder.DEFAULT_MAX_MESSAGES;
 
                                 DB db = DB.getInstance(context);
                                 try {
@@ -117,6 +126,7 @@ public class FragmentDialogFoldersApply extends FragmentDialogBase {
                                                     folder.id,
                                                     Integer.parseInt(sync),
                                                     Integer.parseInt(keep));
+                                            db.folder().setFolderMaxMessages(folder.id, max);
                                         }
 
                                         if (folder.synchronize && !folder.poll)

@@ -380,13 +380,48 @@
             app:layout_constraintTop_toBottomOf="@id/cbKeepAll" />
 
         <CheckBox
+            android:id="@+id/cbMaxMessages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/title_folder_max_messages"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvKeepRemark" />
+
+        <eu.faircode.email.EditTextPlain
+            android:id="@+id/etMaxMessages"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:hint="0"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cbMaxMessages" />
+
+        <TextView
+            android:id="@+id/tvMaxMessagesHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="6dp"
+            android:text="@string/title_folder_max_messages_hint"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etMaxMessages" />
+
+        <CheckBox
             android:id="@+id/cbAutoDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:text="@string/title_auto_delete"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvKeepRemark" />
+            app:layout_constraintTop_toBottomOf="@id/tvMaxMessagesHint" />
 
         <TextView
             android:id="@+id/tvAutoDeleteHint"
@@ -466,7 +501,8 @@
             app:constraint_referenced_ids="
             cbSynchronize,cbPoll,cbDownload,
             tvSyncDays,tvSyncDaysRemark,ibInfo,etSyncDays,
-            tvKeepDays,tvKeepDaysRemark,etKeepDays,cbKeepAll" />
+            tvKeepDays,tvKeepDaysRemark,etKeepDays,cbKeepAll,
+            cbMaxMessages,etMaxMessages,tvMaxMessagesHint" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/grpParent"

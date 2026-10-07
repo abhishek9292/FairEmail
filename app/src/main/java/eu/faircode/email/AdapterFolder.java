@@ -422,6 +422,9 @@ public class AdapterFolder extends RecyclerView.Adapter<AdapterFolder.ViewHolder
                     else
                         a.append(NF.format(folder.keep_days));
 
+                    if (folder.max_messages != null && folder.max_messages > 0)
+                        a.append('|').append(NF.format(folder.max_messages));
+
                     tvAfter.setText(a.toString());
                     if (folder.synchronize) {
                         ibSync.setImageResource(folder.poll

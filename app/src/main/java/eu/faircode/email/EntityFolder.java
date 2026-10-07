@@ -108,6 +108,8 @@ public class EntityFolder extends EntityOrder implements Serializable {
     @NonNull
     public Integer keep_days;
     @NonNull
+    public Integer max_messages = 0; // 0 = no limit
+    @NonNull
     public Boolean auto_delete = false;
     public Boolean auto_add; // sent messages
     public String display;
@@ -257,6 +259,7 @@ public class EntityFolder extends EntityOrder implements Serializable {
     static final int DEFAULT_SYNC = 7; // days
     static final int DEFAULT_KEEP = 30; // days
     static final int DEFAULT_KEEP_DRAFTS = 365; // days
+    static final int DEFAULT_MAX_MESSAGES = 0; // 0 = no limit
 
     private static final List<String> SYSTEM_FOLDER_SYNC = Collections.unmodifiableList(Arrays.asList(
             INBOX,
@@ -300,6 +303,7 @@ public class EntityFolder extends EntityOrder implements Serializable {
 
         this.sync_days = EntityFolder.DEFAULT_SYNC;
         this.keep_days = EntityFolder.DEFAULT_KEEP;
+        this.max_messages = EntityFolder.DEFAULT_MAX_MESSAGES;
 
         if (EntityFolder.INBOX.equals(type)) {
             this.unified = true;
@@ -345,6 +349,7 @@ public class EntityFolder extends EntityOrder implements Serializable {
         this.download = parent.download;
         this.sync_days = parent.sync_days;
         this.keep_days = parent.keep_days;
+        this.max_messages = parent.max_messages;
         this.notify = parent.notify;
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -691,6 +696,7 @@ public class EntityFolder extends EntityOrder implements Serializable {
                     Objects.equals(this.subscribed, other.subscribed) &&
                     this.sync_days.equals(other.sync_days) &&
                     this.keep_days.equals(other.keep_days) &&
+                    Objects.equals(this.max_messages, other.max_messages) &&
                     this.auto_delete.equals(other.auto_delete) &&
                     Objects.equals(this.display, other.display) &&
                     Objects.equals(this.color, other.color) &&
@@ -741,6 +747,7 @@ public class EntityFolder extends EntityOrder implements Serializable {
         json.put("auto_classify_target", auto_classify_target);
         json.put("sync_days", sync_days);
         json.put("keep_days", keep_days);
+        json.put("max_messages", max_messages);
         json.put("auto_delete", auto_delete);
         json.put("display", display);
         json.put("color", color);
@@ -798,6 +805,9 @@ public class EntityFolder extends EntityOrder implements Serializable {
             folder.keep_days = json.getInt("keep_days");
         else
             folder.keep_days = folder.sync_days;
+
+        if (json.has("max_messages"))
+            folder.max_messages = json.getInt("max_messages");
 
         if (json.has("auto_delete"))
             folder.auto_delete = json.getBoolean("auto_delete");

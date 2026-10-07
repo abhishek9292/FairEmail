@@ -370,6 +370,7 @@ public interface DaoFolder {
             ", auto_classify_target = :auto_classify_target" +
             ", `sync_days` = :sync_days" +
             ", `keep_days` = :keep_days" +
+            ", max_messages = :max_messages" +
             ", auto_delete = :auto_delete" +
             " WHERE id = :id")
     int setFolderProperties(
@@ -379,7 +380,7 @@ public interface DaoFolder {
             boolean hide, boolean hide_seen,
             boolean synchronize, boolean poll, int poll_factor, boolean download,
             boolean auto_classify_source, boolean auto_classify_target,
-            int sync_days, int keep_days, boolean auto_delete);
+            int sync_days, int keep_days, int max_messages, boolean auto_delete);
 
     @Query("UPDATE folder" +
             " SET sync_days = :sync_days, keep_days = :keep_days" +
@@ -401,6 +402,9 @@ public interface DaoFolder {
 
     @Query("UPDATE folder SET keep_days = :days WHERE id = :id AND NOT (keep_days IS :days)")
     int setFolderKeep(long id, int days);
+
+    @Query("UPDATE folder SET max_messages = :max_messages WHERE id = :id AND NOT (max_messages IS :max_messages)")
+    int setFolderMaxMessages(long id, int max_messages);
 
     @Query("UPDATE folder SET uidv = :uidv WHERE id = :id AND NOT (uidv IS :uidv)")
     int setFolderUidValidity(long id, Long uidv);
