@@ -129,6 +129,8 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
     private TextView tvImportContacts;
     private ImageButton ibGraphContacts;
     private Button btnGraphContacts;
+    private ImageButton ibPermissions;
+    private Group grpPermissions;
 
     private TextView tvDozeDone;
     private Button btnDoze;
@@ -144,6 +146,8 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
 
     private TextView tvBatteryUsage;
     private TextView tvSyncStopped;
+    private ImageButton ibDoze;
+    private Group grpDoze;
 
     private CardView cardExtra;
     private TextView tvExtra;
@@ -226,6 +230,8 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
         tvImportContacts = view.findViewById(R.id.tvImportContacts);
         ibGraphContacts = view.findViewById(R.id.ibGraphContacts);
         btnGraphContacts = view.findViewById(R.id.btnGraphContacts);
+        ibPermissions = view.findViewById(R.id.ibPermissions);
+        grpPermissions = view.findViewById(R.id.grpPermissions);
 
         tvDozeDone = view.findViewById(R.id.tvDozeDone);
         btnDoze = view.findViewById(R.id.btnDoze);
@@ -241,6 +247,8 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
 
         tvBatteryUsage = view.findViewById(R.id.tvBatteryUsage);
         tvSyncStopped = view.findViewById(R.id.tvSyncStopped);
+        ibDoze = view.findViewById(R.id.ibDoze);
+        grpDoze = view.findViewById(R.id.grpDoze);
 
         cardExtra = view.findViewById(R.id.cardExtra);
         tvExtra = view.findViewById(R.id.tvExtra);
@@ -261,7 +269,6 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
         grpDataSaver = view.findViewById(R.id.grpDataSaver);
         grpSupport = view.findViewById(R.id.grpSupport);
         grpExtra = view.findViewById(R.id.grpExtra);
-
         // Wire controls
 
         tvWelcome.setOnClickListener(new View.OnClickListener() {
@@ -304,9 +311,35 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
         ibWelcome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean setup_welcome = !prefs.getBoolean("setup_welcome", true);
+                boolean setup_welcome = !prefs.getBoolean("setup_welcome", false);
                 prefs.edit().putBoolean("setup_welcome", setup_welcome).apply();
                 updateWelcome();
+            }
+        });
+
+        updatePermissions();
+
+        ibPermissions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean setup_permissions = !prefs.getBoolean("setup_permissions", false);
+                prefs.edit().putBoolean("setup_permissions", setup_permissions).apply();
+                updatePermissions();
+                if (setup_permissions)
+                    setGrantedPermissions();
+            }
+        });
+
+        updateDoze();
+
+        ibDoze.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean setup_doze = !prefs.getBoolean("setup_doze", false);
+                prefs.edit().putBoolean("setup_doze", setup_doze).apply();
+                updateDoze();
+                if (setup_doze)
+                    updateDozeState();
             }
         });
 
@@ -984,7 +1017,8 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
                             break;
                         }
 
-                grpGraphContacts.setVisibility(outlook ? View.VISIBLE : View.GONE);
+                grpGraphContacts.setVisibility(outlook &&
+                        prefs.getBoolean("setup_permissions", false) ? View.VISIBLE : View.GONE);
 
                 prefs.edit().putBoolean("has_accounts", done).apply();
             }
@@ -1033,6 +1067,45 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
         setGrantedPermissions();
 
         // Doze
+        updateDozeState();
+
+        // Apply collapsed/expanded state last so it wins over per-view visibility
+        updatePermissions();
+        updateDoze();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ConnectivityManager cm = Helper.getSystemService(getContext(), ConnectivityManager.class);
+            cm.unregisterNetworkCallback(networkCallback);
+        }
+    }
+
+    private void updateWelcome() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean setup_welcome = prefs.getBoolean("setup_welcome", false);
+        ibWelcome.setImageLevel(setup_welcome ? 0 /* less */ : 1 /* more */);
+        grpWelcome.setVisibility(setup_welcome ? View.VISIBLE : View.GONE);
+    }
+
+    private void updatePermissions() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean setup_permissions = prefs.getBoolean("setup_permissions", false);
+        ibPermissions.setImageLevel(setup_permissions ? 0 /* less */ : 1 /* more */);
+        grpPermissions.setVisibility(setup_permissions ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateDoze() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean setup_doze = prefs.getBoolean("setup_doze", false);
+        ibDoze.setImageLevel(setup_doze ? 0 /* less */ : 1 /* more */);
+        grpDoze.setVisibility(setup_doze ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateDozeState() {
         boolean isIgnoring = !Boolean.FALSE.equals(Helper.isIgnoringOptimizations(getContext()));
         boolean canScheduleExact = AlarmManagerCompatEx.canScheduleExactAlarms(getContext());
 
@@ -1067,23 +1140,6 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
 
         tvStamina.setVisibility(Helper.isStaminaEnabled(getContext())
                 ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ConnectivityManager cm = Helper.getSystemService(getContext(), ConnectivityManager.class);
-            cm.unregisterNetworkCallback(networkCallback);
-        }
-    }
-
-    private void updateWelcome() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean setup_welcome = prefs.getBoolean("setup_welcome", true);
-        ibWelcome.setImageLevel(setup_welcome ? 0 /* less */ : 1 /* more */);
-        grpWelcome.setVisibility(setup_welcome ? View.VISIBLE : View.GONE);
     }
 
     private void updateManual() {

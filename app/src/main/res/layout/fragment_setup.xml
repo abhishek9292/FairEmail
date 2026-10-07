@@ -191,7 +191,7 @@
                     android:id="@+id/grpWelcome"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:constraint_referenced_ids="intro,intro_one,intro_two,intro_three,simple,issue,analytics,tvPrivacy,tvSupport" />
+                    app:constraint_referenced_ids="intro,intro_one,intro_two,intro_three,simple,issue,analytics,tvFree,tvPrivacy,tvSupport" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
@@ -768,6 +768,24 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:constraint_referenced_ids="ibGraphContacts,btnGraphContacts" />
+
+                <ImageButton
+                    android:id="@+id/ibPermissions"
+                    android:layout_width="84dp"
+                    android:layout_height="36dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvImportContacts"
+                    app:srcCompat="@drawable/expander" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/grpPermissions"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:constraint_referenced_ids="tvContactPermissions,tvCalendarPermissions,tvNotificationPermissions,tvPermissionsDone,btnPermissions,tvPermissionsWhy,tvImportContacts,grpGraphContacts" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
@@ -1053,6 +1071,24 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     app:constraint_referenced_ids="tvDataSaver,btnDataSaver" />
+
+                <ImageButton
+                    android:id="@+id/ibDoze"
+                    android:layout_width="84dp"
+                    android:layout_height="36dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="6dp"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvSyncStopped"
+                    app:srcCompat="@drawable/expander" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/grpDoze"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:constraint_referenced_ids="tvDoze,tvDozeDone,btnDoze,tvDoze15,tvDoze12,tvDozeHint,tvDozeWhy,tvKilling,tvBackgroundRestricted,btnBackgroundRestricted,tvDataSaver,btnDataSaver,tvStamina,cbAlways,tvAlwaysRemark,tvBatteryUsage,tvSyncStopped" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 
