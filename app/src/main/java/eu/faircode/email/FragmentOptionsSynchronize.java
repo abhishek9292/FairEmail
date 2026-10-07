@@ -108,6 +108,8 @@ public class FragmentOptionsSynchronize extends FragmentBase implements SharedPr
     private SwitchCompat swSubscriptions;
     private SwitchCompat swTuneKeepAlive;
 
+    private Button btnMaxMessages;
+
     private SwitchCompat swCheckAuthentication;
     private ImageButton ibCheckAuthenticationInfo;
     private SwitchCompat swCheckTls;
@@ -211,6 +213,8 @@ public class FragmentOptionsSynchronize extends FragmentBase implements SharedPr
         swSubscriptions = view.findViewById(R.id.swSubscriptions);
         swTuneKeepAlive = view.findViewById(R.id.swTuneKeepAlive);
 
+        btnMaxMessages = view.findViewById(R.id.btnMaxMessages);
+
         swCheckAuthentication = view.findViewById(R.id.swCheckAuthentication);
         ibCheckAuthenticationInfo = view.findViewById(R.id.ibCheckAuthenticationInfo);
         swCheckTls = view.findViewById(R.id.swCheckTls);
@@ -259,6 +263,14 @@ public class FragmentOptionsSynchronize extends FragmentBase implements SharedPr
             public void onClick(View v) {
                 FragmentDialogUnblockAll fragment = new FragmentDialogUnblockAll();
                 fragment.show(getParentFragmentManager(), "unblock:all");
+            }
+        });
+
+        btnMaxMessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(v.getContext());
+                lbm.sendBroadcast(new Intent(ActivitySetup.ACTION_VIEW_ACCOUNTS));
             }
         });
 
