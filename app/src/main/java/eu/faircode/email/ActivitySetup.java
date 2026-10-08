@@ -100,6 +100,8 @@ public class ActivitySetup extends ActivityBase implements FragmentManager.OnBac
     static final int REQUEST_IMPORT_PROVIDERS = 16;
     static final int REQUEST_GRAPH_CONTACTS = 17;
     static final int REQUEST_GRAPH_CONTACTS_OAUTH = 18;
+    static final int REQUEST_SELECT_ACCOUNT_MAX_MESSAGES = 19;
+    static final int REQUEST_SELECT_FOLDER_MAX_MESSAGES = 20;
     static final int REQUEST_DEBUG_INFO = 7000;
 
     static final int PI_CONNECTION = 1;
@@ -118,6 +120,7 @@ public class ActivitySetup extends ActivityBase implements FragmentManager.OnBac
     static final String ACTION_IMPORT_CERTIFICATE = BuildConfig.APPLICATION_ID + ".IMPORT_CERTIFICATE";
     static final String ACTION_SETUP_REORDER = BuildConfig.APPLICATION_ID + ".SETUP_REORDER";
     static final String ACTION_SETUP_MORE = BuildConfig.APPLICATION_ID + ".SETUP_MORE";
+    static final String ACTION_SET_MAX_MESSAGES = BuildConfig.APPLICATION_ID + ".SET_MAX_MESSAGES";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -343,6 +346,7 @@ public class ActivitySetup extends ActivityBase implements FragmentManager.OnBac
         iff.addAction(ACTION_IMPORT_CERTIFICATE);
         iff.addAction(ACTION_SETUP_REORDER);
         iff.addAction(ACTION_SETUP_MORE);
+        iff.addAction(ACTION_SET_MAX_MESSAGES);
         lbm.registerReceiver(receiver, iff);
     }
 
@@ -440,6 +444,17 @@ public class ActivitySetup extends ActivityBase implements FragmentManager.OnBac
                         getSupportFragmentManager().setFragmentResult("options:tab", result);
                     } else
                         performBack();
+                    break;
+                case REQUEST_SELECT_ACCOUNT_MAX_MESSAGES:
+                    if (resultCode == RESULT_OK && data != null) {
+                        Bundle aargs = data.getBundleExtra("args");
+                        if (aargs != null)
+                            selectMaxMessagesFolder(aargs.getLong("account", -1));
+                    }
+                    break;
+                case REQUEST_SELECT_FOLDER_MAX_MESSAGES:
+                    if (resultCode == RESULT_OK && data != null)
+                        onEditMaxMessagesFolder(data.getBundleExtra("args"));
                     break;
                 case REQUEST_DEBUG_INFO:
                     if (resultCode == RESULT_OK && data != null)
@@ -727,6 +742,93 @@ public class ActivitySetup extends ActivityBase implements FragmentManager.OnBac
         fragmentTransaction.commit();
     }
 
+    private void onSetMaxMessages(Intent intent) {
+        new SimpleTask<List<EntityAccount>>() {
+            @Override
+            protected List<EntityAccount> onExecute(Context context, Bundle args) {
+                DB db = DB.getInstance(context);
+                return db.account().getSynchronizingAccounts(null);
+            }
+
+            @Override
+            protected void onExecuted(Bundle args, List<EntityAccount> accounts) {
+                if (!getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))
+                    return;
+
+                if (accounts == null || accounts.size() == 0) {
+                    ToastEx.makeText(ActivitySetup.this, R.string.title_no_account, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (accounts.size() == 1)
+                    selectMaxMessagesFolder(accounts.get(0).id);
+                else {
+                    Bundle aargs = new Bundle();
+                    aargs.putBoolean("all", false);
+
+                    FragmentDialogSelectAccount fragment = new FragmentDialogSelectAccount();
+                    fragment.setArguments(aargs);
+                    fragment.setTargetActivity(ActivitySetup.this, REQUEST_SELECT_ACCOUNT_MAX_MESSAGES);
+                    fragment.show(getSupportFragmentManager(), "max:account");
+                }
+            }
+
+            @Override
+            protected void onException(Bundle args, Throwable ex) {
+                Log.unexpectedError(getSupportFragmentManager(), ex);
+            }
+        }.execute(this, new Bundle(), "max:accounts");
+    }
+
+    private void selectMaxMessagesFolder(long account) {
+        Bundle aargs = new Bundle();
+        aargs.putLong("account", account);
+        aargs.putInt("icon", R.drawable.twotone_folder_24);
+        aargs.putString("title", getString(R.string.title_max_messages_set));
+        aargs.putLongArray("disabled", new long[0]);
+
+        FragmentDialogSelectFolder fragment = new FragmentDialogSelectFolder();
+        fragment.setArguments(aargs);
+        fragment.setTargetActivity(this, REQUEST_SELECT_FOLDER_MAX_MESSAGES);
+        fragment.show(getSupportFragmentManager(), "max:folder");
+    }
+
+    private void onEditMaxMessagesFolder(Bundle args) {
+        final long folderId = args.getLong("folder", -1);
+        if (folderId < 0)
+            return;
+
+        new SimpleTask<EntityAccount>() {
+            @Override
+            protected EntityAccount onExecute(Context context, Bundle args) {
+                EntityFolder folder = DB.getInstance(context).folder().getFolder(folderId);
+                return (folder == null ? null : DB.getInstance(context).account().getAccount(folder.account));
+            }
+
+            @Override
+            protected void onExecuted(Bundle args, EntityAccount account) {
+                if (account == null || !getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))
+                    return;
+
+                Bundle fargs = new Bundle();
+                fargs.putLong("id", folderId);
+                fargs.putLong("account", account.id);
+                fargs.putBoolean("imap", account.protocol == EntityAccount.TYPE_IMAP);
+
+                FragmentFolder fragment = new FragmentFolder();
+                fragment.setArguments(fargs);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.content_frame, fragment).addToBackStack("folder");
+                fragmentTransaction.commit();
+            }
+
+            @Override
+            protected void onException(Bundle args, Throwable ex) {
+                Log.unexpectedError(getSupportFragmentManager(), ex);
+            }
+        }.execute(this, new Bundle(), "max:folder:edit");
+    }
+
     private void onViewIdentities(Intent intent) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.content_frame, new FragmentIdentities()).addToBackStack("identities");
@@ -829,6 +931,8 @@ public class ActivitySetup extends ActivityBase implements FragmentManager.OnBac
                             intent.getStringExtra("className"));
                 else if (ACTION_SETUP_MORE.equals(action))
                     onSetupMore(intent);
+                else if (ACTION_SET_MAX_MESSAGES.equals(action))
+                    onSetMaxMessages(intent);
             }
         }
     };

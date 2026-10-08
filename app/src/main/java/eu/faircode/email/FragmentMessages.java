@@ -771,6 +771,7 @@ public class FragmentMessages extends FragmentBase
             }
         });
 
+        // Pro/support banner is disabled, never show it at the top of the conversation list
         grpSupport.setVisibility(View.GONE);
         tvSupport.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -6026,14 +6027,8 @@ public class FragmentMessages extends FragmentBase
         if (grpVpnActive != null && "vpn_reminder".equals(key))
             updateVPN();
 
-        if (grpSupport != null &&
-                ("pro".equals(key) || "banner_hidden".equals(key))) {
-            boolean pro = ActivityBilling.isPro(getContext());
-            long banner_hidden = prefs.getLong("banner_hidden", 0);
-            grpSupport.setVisibility(
-                    !pro && banner_hidden == 0 && viewType == AdapterMessage.ViewType.UNIFIED
-                            ? View.VISIBLE : View.GONE);
-        }
+        if (grpSupport != null)
+            grpSupport.setVisibility(View.GONE);
     }
 
     private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {

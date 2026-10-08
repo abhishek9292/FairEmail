@@ -270,7 +270,7 @@ public class FragmentOptionsSynchronize extends FragmentBase implements SharedPr
             @Override
             public void onClick(View v) {
                 LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(v.getContext());
-                lbm.sendBroadcast(new Intent(ActivitySetup.ACTION_VIEW_ACCOUNTS));
+                lbm.sendBroadcast(new Intent(ActivitySetup.ACTION_SET_MAX_MESSAGES));
             }
         });
 

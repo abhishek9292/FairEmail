@@ -33,6 +33,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -398,7 +399,71 @@ public class FragmentBase extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         Log.d("Activity " + this + " saved=" + (savedInstanceState != null));
         super.onActivityCreated(savedInstanceState);
+        collapseOptionCards();
         scrollTo();
+    }
+
+    private void collapseOptionCards() {
+        // Collapse the option cards on the settings pages, title only, reset each time
+        String name = getClass().getSimpleName();
+        if (!name.startsWith("FragmentOptions") || "FragmentOptions".equals(name))
+            return;
+
+        View root = getView();
+        if (root == null)
+            return;
+
+        try {
+            collapseCards(root);
+        } catch (Throwable ex) {
+            Log.e(ex);
+        }
+    }
+
+    private static void collapseCards(View view) {
+        if (view instanceof androidx.cardview.widget.CardView) {
+            ViewGroup card = (ViewGroup) view;
+            if (card.getChildCount() == 1) {
+                View child = card.getChildAt(0);
+                if (child instanceof ViewGroup && ((ViewGroup) child).getChildCount() > 1) {
+                    final ViewGroup body = (ViewGroup) child;
+                    final View header = body.getChildAt(0);
+
+                    // Collapse: hide everything except the title/header
+                    for (int i = 1; i < body.getChildCount(); i++)
+                        body.getChildAt(i).setVisibility(View.GONE);
+
+                    // Show an expand indicator on TextView headers
+                    if (header instanceof TextView) {
+                        ((TextView) header).setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                null, null, header.getContext().getDrawable(R.drawable.expander_hor), null);
+                        ((TextView) header).setCompoundDrawablePadding(Helper.dp2pixels(header.getContext(), 6));
+                    }
+
+                    header.setClickable(true);
+                    header.setOnClickListener(new View.OnClickListener() {
+                        private boolean expanded = false;
+
+                        @Override
+                        public void onClick(View v) {
+                            expanded = !expanded;
+                            for (int i = 1; i < body.getChildCount(); i++)
+                                body.getChildAt(i).setVisibility(expanded ? View.VISIBLE : View.GONE);
+
+                            if (header instanceof TextView) {
+                                Drawable d = header.getContext().getDrawable(R.drawable.expander_hor);
+                                if (d != null) {
+                                    d.setLevel(expanded ? 0 /* less */ : 1 /* more */);
+                                    ((TextView) header).setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, d, null);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        } else if (view instanceof ViewGroup)
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++)
+                collapseCards(((ViewGroup) view).getChildAt(i));
     }
 
     @Override
