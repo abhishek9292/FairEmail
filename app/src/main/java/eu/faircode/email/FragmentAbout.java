@@ -46,7 +46,7 @@ public class FragmentAbout extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.menu_about);
+        setCodingSubtitle(getString(R.string.menu_about), CodingIds.C3);
         setHasOptionsMenu(true);
 
         final Context context = getContext();

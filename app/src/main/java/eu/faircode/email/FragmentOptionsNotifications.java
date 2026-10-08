@@ -160,7 +160,7 @@ public class FragmentOptionsNotifications extends FragmentBase implements Shared
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_setup);
+        setCodingSubtitle(getString(R.string.title_setup), CodingIds.C25);
         setHasOptionsMenu(true);
 
         view = inflater.inflate(R.layout.fragment_options_notifications, container, false);

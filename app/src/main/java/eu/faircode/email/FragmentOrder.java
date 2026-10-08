@@ -63,7 +63,7 @@ public class FragmentOrder extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(title);
+        setCodingSubtitle(getString(title), CodingIds.C36);
         setHasOptionsMenu(true);
 
         View view = inflater.inflate(R.layout.fragment_order, container, false);

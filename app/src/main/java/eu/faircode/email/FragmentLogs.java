@@ -86,7 +86,7 @@ public class FragmentLogs extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_log);
+        setCodingSubtitle(getString(R.string.title_log), CodingIds.C34);
         setHasOptionsMenu(true);
 
         View view = inflater.inflate(R.layout.fragment_logs, container, false);

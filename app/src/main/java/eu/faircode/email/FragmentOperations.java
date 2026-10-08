@@ -49,7 +49,7 @@ public class FragmentOperations extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.menu_operations);
+        setCodingSubtitle(getString(R.string.menu_operations), CodingIds.C6);
         setHasOptionsMenu(true);
 
         View view = inflater.inflate(R.layout.fragment_operations, container, false);

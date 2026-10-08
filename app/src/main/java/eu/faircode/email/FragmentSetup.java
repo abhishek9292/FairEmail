@@ -181,7 +181,7 @@ public class FragmentSetup extends FragmentBase implements SharedPreferences.OnS
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_setup);
+        setCodingSubtitle(getString(R.string.title_setup), CodingIds.C17);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 

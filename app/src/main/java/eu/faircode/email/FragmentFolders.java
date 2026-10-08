@@ -165,7 +165,7 @@ public class FragmentFolders extends FragmentBase {
                 selectedModel.select(null);
         }
 
-        setTitle(R.string.page_folders);
+        setCodingTitle(getString(R.string.page_folders), CodingIds.C2);
     }
 
     @Override

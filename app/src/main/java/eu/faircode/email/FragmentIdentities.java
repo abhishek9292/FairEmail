@@ -76,7 +76,7 @@ public class FragmentIdentities extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_list_identities);
+        setCodingSubtitle(getString(R.string.title_list_identities), CodingIds.C11);
 
         View view = inflater.inflate(R.layout.fragment_identities, container, false);
 

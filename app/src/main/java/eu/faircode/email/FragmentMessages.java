@@ -269,6 +269,12 @@ import me.everything.android.ui.overscroll.adapters.RecyclerViewOverScrollDecorA
 
 public class FragmentMessages extends FragmentBase
         implements SharedPreferences.OnSharedPreferenceChangeListener, FragmentManager.OnBackStackChangedListener {
+
+    // Coding identify number (c-NUMBER): small unique id appended to the page title,
+    // so a page can be referenced unambiguously. See CodingIds for the index.
+    // Format: "Inbox [c1]".
+    private static final String CODING_ID = CodingIds.C1;
+
     private ViewGroup view;
     private SwipeRefreshLayoutEx swipeRefresh;
     private TextView tvAirplane;
@@ -570,12 +576,12 @@ public class FragmentMessages extends FragmentBase
                         threading ? R.plurals.page_conversation : R.plurals.page_message, 10));
             } else {
                 viewType = AdapterMessage.ViewType.THREAD;
-                setTitle(getResources().getQuantityString(
-                        threading ? R.plurals.page_conversation : R.plurals.page_message, 1));
+                setCodingTitle(getResources().getQuantityString(
+                        threading ? R.plurals.page_conversation : R.plurals.page_message, 1), CodingIds.C30);
             }
         else {
             viewType = AdapterMessage.ViewType.SEARCH;
-            setTitle(server ? R.string.title_search_server : R.string.title_search_device);
+            setCodingTitle(getString(server ? R.string.title_search_server : R.string.title_search_device), CodingIds.C29);
         }
 
         if (viewType != AdapterMessage.ViewType.THREAD &&
@@ -7672,6 +7678,23 @@ public class FragmentMessages extends FragmentBase
                 if (!BuildConfig.PLAY_STORE_RELEASE && folder.accountError != null)
                     accountErrors = true;
             }
+        }
+
+        // Coding identify number: append a small unique id to the page title, e.g. "Inbox [c1]".
+        // See CodingIds for the index. This is the folder messages list / conversations screen.
+        if (folders.size() > 0) {
+            String codingName;
+            if (viewType == AdapterMessage.ViewType.FOLDER)
+                codingName = folders.get(0).getDisplayName(getContext());
+            else {
+                // UNIFIED: use the folder type name (Inbox/Archive/...), fall back to the account name
+                codingName = (type == null ? null : EntityFolder.localizeType(getContext(), type));
+                if (TextUtils.isEmpty(codingName))
+                    codingName = folders.get(0).accountName;
+                if (TextUtils.isEmpty(codingName))
+                    codingName = getString(R.string.title_folder_unified);
+            }
+            setCodingSubtitle(codingName, CODING_ID);
         }
 
         if (refreshing == swipeRefresh.isRefreshing() &&

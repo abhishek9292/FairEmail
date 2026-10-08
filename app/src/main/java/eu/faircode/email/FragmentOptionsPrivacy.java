@@ -130,7 +130,7 @@ public class FragmentOptionsPrivacy extends FragmentBase implements SharedPrefer
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_setup);
+        setCodingSubtitle(getString(R.string.title_setup), CodingIds.C23);
         setHasOptionsMenu(true);
 
         view = inflater.inflate(R.layout.fragment_options_privacy, container, false);

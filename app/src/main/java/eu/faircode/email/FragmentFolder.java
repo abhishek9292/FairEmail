@@ -121,7 +121,7 @@ public class FragmentFolder extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(id < 0 ? R.string.title_new_folder : R.string.title_edit_folder);
+        setCodingSubtitle(getString(id < 0 ? R.string.title_new_folder : R.string.title_edit_folder), CodingIds.C10);
         setHasOptionsMenu(true);
 
         view = (ViewGroup) inflater.inflate(R.layout.fragment_folder, container, false);

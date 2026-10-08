@@ -171,7 +171,7 @@ public class FragmentOAuth extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(name);
+        setCodingSubtitle(name, CodingIds.C33);
         setHasOptionsMenu(true);
 
         view = (ViewGroup) inflater.inflate(R.layout.fragment_oauth, container, false);

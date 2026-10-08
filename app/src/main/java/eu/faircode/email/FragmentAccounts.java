@@ -110,7 +110,7 @@ public class FragmentAccounts extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_list_accounts);
+        setCodingSubtitle(getString(R.string.title_list_accounts), CodingIds.C8);
         setHasOptionsMenu(true);
 
         view = (ViewGroup) inflater.inflate(R.layout.fragment_accounts, container, false);

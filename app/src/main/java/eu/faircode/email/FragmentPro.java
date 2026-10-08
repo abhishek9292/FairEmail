@@ -77,7 +77,7 @@ public class FragmentPro extends FragmentBase implements SharedPreferences.OnSha
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.menu_pro);
+        setCodingSubtitle(getString(R.string.menu_pro), CodingIds.C5);
         setHasOptionsMenu(true);
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());

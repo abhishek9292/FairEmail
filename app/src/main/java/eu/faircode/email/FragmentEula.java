@@ -37,7 +37,7 @@ public class FragmentEula extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_welcome);
+        setCodingSubtitle(getString(R.string.title_welcome), CodingIds.C35);
 
         View view = inflater.inflate(R.layout.fragment_eula, container, false);
 

@@ -38,7 +38,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -110,6 +113,29 @@ public class FragmentBase extends Fragment {
 
     protected void setTitle(int resid) {
         setTitle(getString(resid));
+    }
+
+    /**
+     * Append a small (tiny) coding identify number to a page title, for development reference.
+     * Format: "&lt;base&gt; [cN]". See CodingIds for the index.
+     */
+    protected void setCodingTitle(CharSequence base, String codingId) {
+        setTitle(getCodingText(base, codingId));
+    }
+
+    protected void setCodingSubtitle(CharSequence base, String codingId) {
+        setSubtitle(getCodingText(base, codingId));
+    }
+
+    private static CharSequence getCodingText(CharSequence base, String codingId) {
+        if (base == null)
+            base = "";
+        String suffix = " [" + codingId + "]";
+        String full = base + suffix;
+        SpannableString ss = new SpannableString(full);
+        ss.setSpan(new RelativeSizeSpan(0.6f), full.length() - suffix.length(), full.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ss;
     }
 
     protected void setTitle(CharSequence title) {

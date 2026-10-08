@@ -47,7 +47,7 @@ public class FragmentLegend extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.menu_legend);
+        setCodingSubtitle(getString(R.string.menu_legend), CodingIds.C4);
         setHasOptionsMenu(true); // To intercept back
 
         if (savedInstanceState != null)

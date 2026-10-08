@@ -189,7 +189,7 @@ public class FragmentIdentity extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_edit_identity);
+        setCodingSubtitle(getString(R.string.title_edit_identity), CodingIds.C12);
         setHasOptionsMenu(true);
 
         view = (ViewGroup) inflater.inflate(R.layout.fragment_identity, container, false);

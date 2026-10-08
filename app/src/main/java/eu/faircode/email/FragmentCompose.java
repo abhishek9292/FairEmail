@@ -394,7 +394,7 @@ public class FragmentCompose extends FragmentBase {
         if (compose_color != Color.TRANSPARENT && Helper.isDarkTheme(context))
             compose_color = HtmlHelper.adjustLuminance(compose_color, true, HtmlHelper.MIN_LUMINANCE_COMPOSE);
 
-        setTitle(R.string.page_compose);
+        setCodingTitle(getString(R.string.page_compose), CodingIds.C7);
         setSubtitle(getResources().getQuantityString(R.plurals.page_message, 1));
 
         int max = Helper.hasPhotoPicker() ? MediaStore.getPickImagesMaxLimit() : 20;

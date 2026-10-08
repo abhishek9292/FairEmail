@@ -118,7 +118,7 @@ public class FragmentRules extends FragmentBase {
     @Override
     @Nullable
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        setSubtitle(R.string.title_edit_rules);
+        setCodingSubtitle(getString(R.string.title_edit_rules), CodingIds.C13);
         setHasOptionsMenu(true);
 
         view = inflater.inflate(R.layout.fragment_rules, container, false);

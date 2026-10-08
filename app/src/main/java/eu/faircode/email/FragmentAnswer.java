@@ -119,7 +119,7 @@ public class FragmentAnswer extends FragmentBase {
         boolean editor_zoom = prefs.getBoolean("editor_zoom", true);
         int message_zoom = (editor_zoom ? prefs.getInt("message_zoom", 100) : 100);
 
-        setSubtitle(R.string.title_answer_caption);
+        setCodingSubtitle(getString(R.string.title_answer_caption), CodingIds.C16);
         setHasOptionsMenu(true);
 
         view = (ViewGroup) inflater.inflate(R.layout.fragment_answer, container, false);
